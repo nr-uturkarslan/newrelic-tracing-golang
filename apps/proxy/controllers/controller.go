@@ -11,21 +11,20 @@ type User struct {
 	FirstName string
 }
 
-func CreateHandlers(r *gin.Engine) {
-	createHealthHandler(r)
-	createFirstMethodHandler(r)
-}
+func CreateHandlers(
+	router *gin.Engine,
+) {
 
-// Health check
-func createHealthHandler(r *gin.Engine) {
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "OK!",
+	proxy := router.Group("/proxy")
+	{
+		// Health check
+		proxy.GET("/health", func(ginctx *gin.Context) {
+			ginctx.JSON(http.StatusOK, gin.H{
+				"message": "OK!",
+			})
 		})
-	})
-}
 
-// First method
-func createFirstMethodHandler(r *gin.Engine) {
-	r.POST("/method1", services.FirstMethod)
+		// First method
+		proxy.POST("/method1", services.FirstMethod)
+	}
 }

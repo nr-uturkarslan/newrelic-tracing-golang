@@ -1,8 +1,6 @@
 package commons
 
 import (
-	"encoding/json"
-
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
@@ -10,16 +8,15 @@ import (
 )
 
 func CreateSuccessfulHttpResponse(
-	c *gin.Context,
+	ginctx *gin.Context,
 	httpStatusCode int,
 	responseDto *dto.ResponseDto,
 ) {
-	response, _ := json.Marshal(responseDto)
-	c.JSON(httpStatusCode, string(response))
+	ginctx.JSON(httpStatusCode, responseDto)
 }
 
 func CreateFailedHttpResponse(
-	c *gin.Context,
+	ginctx *gin.Context,
 	httpStatusCode int,
 	message string,
 ) {
@@ -29,6 +26,5 @@ func CreateFailedHttpResponse(
 		Message: message,
 	}
 
-	response, _ := json.Marshal(responseDto)
-	c.JSON(httpStatusCode, response)
+	ginctx.JSON(httpStatusCode, responseDto)
 }

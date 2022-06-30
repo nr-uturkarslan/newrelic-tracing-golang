@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -81,6 +82,13 @@ func makeRequestToFirstService(
 			"Call to FirstService has failed.")
 
 		return nil, err
+	}
+
+	if httpResponse.StatusCode != http.StatusOK {
+		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+			"Call to FirstService has failed.")
+
+		return nil, errors.New("call to first service has failed")
 	}
 
 	defer httpResponse.Body.Close()
