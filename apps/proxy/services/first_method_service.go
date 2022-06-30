@@ -97,6 +97,9 @@ func makeRequestToFirstService(
 	var responseDto dto.ResponseDto
 	json.Unmarshal(responseDtoInBytes, &responseDto)
 
+	log.Info("Value retrieved: " + responseDto.Value)
+	log.Info("Tag retrieved: " + responseDto.Tag)
+
 	return &responseDto, nil
 }
 
