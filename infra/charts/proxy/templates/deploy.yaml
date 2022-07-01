@@ -18,6 +18,9 @@ spec:
           ports:
             - protocol: TCP
               containerPort: {{ .Values.port }}
+          env:
+            - name: NEWRELIC_LICENSE_KEY
+              value: {{ .Values.newRelicLicensekey }}
           resources:
             requests:
               cpu: 200m
