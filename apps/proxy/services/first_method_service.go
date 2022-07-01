@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/commons"
 	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
@@ -18,7 +18,7 @@ func FirstMethod(
 	ginctx *gin.Context,
 ) {
 
-	log.Info("First method is triggered...")
+	commons.Log(zerolog.InfoLevel, "First method is triggered...")
 
 	requestBody, err := parseRequestBody(ginctx)
 
@@ -33,7 +33,7 @@ func FirstMethod(
 		return
 	}
 
-	log.Info("First method is executed.")
+	commons.Log(zerolog.InfoLevel, "First method is executed.")
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		createResponseDto(responseDtoFromFirstService))
@@ -56,8 +56,8 @@ func parseRequestBody(
 		return nil, err
 	}
 
-	log.Info("Value provided: " + requestDto.Value)
-	log.Info("Tag provided: " + requestDto.Tag)
+	commons.Log(zerolog.InfoLevel, "Value provided: "+requestDto.Value)
+	commons.Log(zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
 
 	return &requestDto, nil
 }
@@ -105,8 +105,8 @@ func makeRequestToFirstService(
 	var responseDto dto.ResponseDto
 	json.Unmarshal(responseDtoInBytes, &responseDto)
 
-	log.Info("Value retrieved: " + responseDto.Value)
-	log.Info("Tag retrieved: " + responseDto.Tag)
+	commons.Log(zerolog.InfoLevel, "Value retrieved: "+requestDto.Value)
+	commons.Log(zerolog.InfoLevel, "Tag retrieved: "+requestDto.Tag)
 
 	return &responseDto, nil
 }

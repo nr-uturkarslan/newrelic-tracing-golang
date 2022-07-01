@@ -2,7 +2,7 @@ package commons
 
 import (
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 
 	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
 )
@@ -20,7 +20,7 @@ func CreateFailedHttpResponse(
 	httpStatusCode int,
 	message string,
 ) {
-	log.Error(message)
+	Log(zerolog.ErrorLevel, message)
 
 	responseDto := dto.ResponseDto{
 		Message: message,
