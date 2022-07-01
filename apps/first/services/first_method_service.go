@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/first/commons"
-	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/first/dto"
+	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/first/dtos"
 )
 
 func FirstMethod(
