@@ -18,7 +18,9 @@ func CreateHandlers(
 	router.Use(nrgin.Middleware(nrapp))
 
 	firstMethodService := services.FirstMethodService{}
-	secondMethodService := services.SecondMethodService{}
+	secondMethodService := services.SecondMethodService{
+		Nrapp: nrapp,
+	}
 
 	proxy := router.Group("/proxy")
 	{

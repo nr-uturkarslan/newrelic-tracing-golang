@@ -8,13 +8,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/rs/zerolog"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/commons"
 	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
 )
 
-type SecondMethodService struct{}
+type SecondMethodService struct {
+	Nrapp *newrelic.Application
+}
 
 func (s SecondMethodService) SecondMethod(
 	ginctx *gin.Context,
@@ -64,7 +67,7 @@ func (SecondMethodService) parseRequestBody(
 	return &requestDto, nil
 }
 
-func (SecondMethodService) makeRequestToSecondService(
+func (s SecondMethodService) makeRequestToSecondService(
 	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
 ) (
@@ -72,12 +75,26 @@ func (SecondMethodService) makeRequestToSecondService(
 	error,
 ) {
 
-	url := "http://second.second.svc.cluster.local:8080/second/method2"
+	txn := s.Nrapp.StartTransaction("second")
+	defer txn.End()
+
+	secondUrl := "http://second.second.svc.cluster.local:8080/second/method2"
 
 	requestDtoInBytes, _ := json.Marshal(requestDto)
 
-	httpResponse, err := http.Post(url, "application/json",
-		bytes.NewBuffer(requestDtoInBytes))
+	client := &http.Client{}
+	client.Transport = newrelic.NewRoundTripper(client.Transport)
+
+	request, _ := http.NewRequest(http.MethodPost, secondUrl,
+		bytes.NewBufferString(string(requestDtoInBytes)),
+	)
+	request.Header.Add("Content-Type", "application/json")
+
+	request = newrelic.RequestWithTransactionContext(request, txn)
+	httpResponse, err := client.Do(request)
+
+	// httpResponse, err := http.Post(secondUrl, "application/json",
+	// 	bytes.NewBuffer(requestDtoInBytes))
 
 	if err != nil {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
