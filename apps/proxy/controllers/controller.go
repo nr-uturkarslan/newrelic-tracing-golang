@@ -7,7 +7,7 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
 
-	services "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/services"
+	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/services"
 )
 
 func CreateHandlers(
@@ -16,6 +16,10 @@ func CreateHandlers(
 ) {
 
 	router.Use(nrgin.Middleware(nrapp))
+
+	firstMethodService := services.FirstMethodService{}
+	secondMethodService := services.SecondMethodService{}
+
 	proxy := router.Group("/proxy")
 	{
 		// Health check
@@ -26,6 +30,9 @@ func CreateHandlers(
 		})
 
 		// First method
-		proxy.POST("/method1", services.FirstMethod)
+		proxy.POST("/method1", firstMethodService.FirstMethod)
+
+		// Second method
+		proxy.POST("/method2", secondMethodService.SecondMethod)
 	}
 }

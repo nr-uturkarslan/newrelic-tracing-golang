@@ -14,13 +14,13 @@ import (
 	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
 )
 
-type FirstMethodService struct{}
+type SecondMethodService struct{}
 
-func (s FirstMethodService) FirstMethod(
+func (s SecondMethodService) SecondMethod(
 	ginctx *gin.Context,
 ) {
 
-	commons.Log(zerolog.InfoLevel, "First method is triggered...")
+	commons.Log(zerolog.InfoLevel, "Second method is triggered...")
 
 	requestBody, err := s.parseRequestBody(ginctx)
 
@@ -28,20 +28,20 @@ func (s FirstMethodService) FirstMethod(
 		return
 	}
 
-	responseDtoFromFirstService, err := s.makeRequestToFirstService(ginctx,
+	responseDtoFromSecondService, err := s.makeRequestToSecondService(ginctx,
 		requestBody)
 
 	if err != nil {
 		return
 	}
 
-	commons.Log(zerolog.InfoLevel, "First method is executed.")
+	commons.Log(zerolog.InfoLevel, "Second method is executed.")
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
-		s.createResponseDto(responseDtoFromFirstService))
+		s.createResponseDto(responseDtoFromSecondService))
 }
 
-func (FirstMethodService) parseRequestBody(
+func (SecondMethodService) parseRequestBody(
 	ginctx *gin.Context,
 ) (
 	*dto.RequestDto,
@@ -64,7 +64,7 @@ func (FirstMethodService) parseRequestBody(
 	return &requestDto, nil
 }
 
-func (FirstMethodService) makeRequestToFirstService(
+func (SecondMethodService) makeRequestToSecondService(
 	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
 ) (
@@ -72,7 +72,7 @@ func (FirstMethodService) makeRequestToFirstService(
 	error,
 ) {
 
-	url := "http://first.first.svc.cluster.local:8080/first"
+	url := "http://second.second.svc.cluster.local:8080/second"
 
 	requestDtoInBytes, _ := json.Marshal(requestDto)
 
@@ -81,16 +81,16 @@ func (FirstMethodService) makeRequestToFirstService(
 
 	if err != nil {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
-			"Call to FirstService has failed.")
+			"Call to SecondService has failed.")
 
 		return nil, err
 	}
 
 	if httpResponse.StatusCode != http.StatusOK {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
-			"Call to FirstService has failed.")
+			"Call to SecondService has failed.")
 
-		return nil, errors.New("call to first service has failed")
+		return nil, errors.New("call to second service has failed")
 	}
 
 	defer httpResponse.Body.Close()
@@ -99,7 +99,7 @@ func (FirstMethodService) makeRequestToFirstService(
 
 	if err != nil {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
-			"Response from first service could not be parsed.")
+			"Response from second service could not be parsed.")
 
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (FirstMethodService) makeRequestToFirstService(
 	return &responseDto, nil
 }
 
-func (FirstMethodService) createResponseDto(
+func (SecondMethodService) createResponseDto(
 	data *dto.ResponseDto,
 ) *dto.ResponseDto {
 	return &dto.ResponseDto{
