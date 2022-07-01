@@ -72,7 +72,7 @@ func (FirstMethodService) makeRequestToFirstService(
 	error,
 ) {
 
-	url := "http://first.first.svc.cluster.local:8080/first"
+	url := "http://first.first.svc.cluster.local:8080/first/method1"
 
 	requestDtoInBytes, _ := json.Marshal(requestDto)
 

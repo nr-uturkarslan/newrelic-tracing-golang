@@ -72,7 +72,7 @@ func (SecondMethodService) makeRequestToSecondService(
 	error,
 ) {
 
-	url := "http://second.second.svc.cluster.local:8080/second"
+	url := "http://second.second.svc.cluster.local:8080/second/method2"
 
 	requestDtoInBytes, _ := json.Marshal(requestDto)
 
