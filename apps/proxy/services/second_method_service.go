@@ -75,9 +75,6 @@ func (s SecondMethodService) makeRequestToSecondService(
 	error,
 ) {
 
-	txn := s.Nrapp.StartTransaction("second")
-	defer txn.End()
-
 	secondUrl := "http://second.second.svc.cluster.local:8080/second/method2"
 
 	requestDtoInBytes, _ := json.Marshal(requestDto)
@@ -90,11 +87,11 @@ func (s SecondMethodService) makeRequestToSecondService(
 	)
 	request.Header.Add("Content-Type", "application/json")
 
+	txn := newrelic.FromContext(ginctx)
+	txn.AddAttribute("customattributekey", "customattributevalue")
+
 	request = newrelic.RequestWithTransactionContext(request, txn)
 	httpResponse, err := client.Do(request)
-
-	// httpResponse, err := http.Post(secondUrl, "application/json",
-	// 	bytes.NewBuffer(requestDtoInBytes))
 
 	if err != nil {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
