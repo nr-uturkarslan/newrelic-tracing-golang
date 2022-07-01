@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/second/commons"
 	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/second/dtos"
@@ -14,7 +14,7 @@ func SecondMethod(
 	ginctx *gin.Context,
 ) {
 
-	log.Info("Second method is triggered...")
+	commons.Log(zerolog.InfoLevel, "Second method is triggered...")
 
 	requestBody, err := parseRequestBody(ginctx)
 
@@ -22,7 +22,7 @@ func SecondMethod(
 		return
 	}
 
-	log.Info("Second method is executed.")
+	commons.Log(zerolog.InfoLevel, "Second method is executed.")
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		createResponseDto(requestBody))
@@ -45,8 +45,8 @@ func parseRequestBody(
 		return nil, err
 	}
 
-	log.Info("Value provided: " + requestDto.Value)
-	log.Info("Tag provided: " + requestDto.Tag)
+	commons.Log(zerolog.InfoLevel, "Value provided: "+requestDto.Value)
+	commons.Log(zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
 
 	return &requestDto, nil
 }
