@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,11 @@ func SecondMethod(
 ) {
 
 	commons.Log(zerolog.InfoLevel, "Second method is triggered...")
+
+	for key, element := range ginctx.Request.Header {
+		fmt.Println("Key:", key, "=>", "Element:", element)
+		commons.Log(zerolog.InfoLevel, "headerKey :"+key+" headerValue :"+element[0])
+	}
 
 	requestBody, err := parseRequestBody(ginctx)
 

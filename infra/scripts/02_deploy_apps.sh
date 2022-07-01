@@ -4,19 +4,7 @@
 ### Apps Setup ###
 ##################
 
-### Set parameters
-program="ugur"
-locationLong="westeurope"
-locationShort="euw"
-project="tracing"
-stageLong="dev"
-stageShort="d"
-instance="001"
-
 ### Set variables
-
-# AKS
-aksName="aks$program$locationShort$project$stageShort$instance"
 
 # Zookeeper
 declare -A zookeeper
@@ -135,21 +123,17 @@ echo -e "\n------\n"
 # docker push "${DOCKERHUB_NAME}/${first[imageName]}"
 # echo -e "\n------\n"
 
-# # Second
-# echo -e "\n--- Second ---\n"
-# docker build \
-#   --platform linux/amd64 \
-#   --build-arg newRelicAppName=${second[name]} \
-#   --build-arg newRelicLicenseKey=$NEWRELIC_LICENSE_KEY \
-#   --tag "${DOCKERHUB_NAME}/${second[name]}" \
-#   "../../apps/${second[name]}/."
-# docker push "${DOCKERHUB_NAME}/${second[name]}"
-# echo -e "\n------\n"
+# Second
+echo -e "\n--- Second ---\n"
+docker build \
+  --tag "${DOCKERHUB_NAME}/${second[imageName]}" \
+  "../../apps/${second[name]}/."
+docker push "${DOCKERHUB_NAME}/${second[imageName]}"
+echo -e "\n------\n"
 
 # # Third
 # echo -e "\n--- Third ---\n"
 # docker build \
-#   --platform linux/amd64 \
 #   --tag "${DOCKERHUB_NAME}/${third[name]}" \
 #   "../../apps/${third[name]}/."
 # docker push "${DOCKERHUB_NAME}/${third[name]}"
@@ -366,45 +350,47 @@ helm upgrade ${proxy[name]} \
   --set imageName=${proxy[imageName]} \
   --set namespace=${proxy[namespace]} \
   --set port=${proxy[port]} \
+  --set newRelicLicensekey=$NEWRELIC_LICENSE_KEY \
   "../charts/${proxy[name]}"
 #########
 
-#################
-### First app ###
-#################
-echo "Deploying first app..."
+# #################
+# ### First app ###
+# #################
+# echo "Deploying first app..."
 
-helm upgrade ${first[name]} \
-  --install \
-  --wait \
-  --debug \
-  --create-namespace \
-  --namespace ${first[namespace]} \
-  --set dockerhubName=$DOCKERHUB_NAME \
-  --set name=${first[name]} \
-  --set imageName=${first[imageName]} \
-  --set namespace=${first[namespace]} \
-  --set port=${first[port]} \
-  "../charts/${first[name]}"
-#########
-
-# ##################
-# ### Second app ###
-# ##################
-# echo "Deploying second app..."
-
-# helm upgrade ${second[name]} \
+# helm upgrade ${first[name]} \
 #   --install \
 #   --wait \
 #   --debug \
 #   --create-namespace \
-#   --namespace ${second[namespace]} \
+#   --namespace ${first[namespace]} \
 #   --set dockerhubName=$DOCKERHUB_NAME \
-#   --set name=${second[name]} \
-#   --set namespace=${second[namespace]} \
-#   --set port=${second[port]} \
-#   "../charts/${second[name]}"
+#   --set name=${first[name]} \
+#   --set imageName=${first[imageName]} \
+#   --set namespace=${first[namespace]} \
+#   --set port=${first[port]} \
+#   "../charts/${first[name]}"
 # #########
+
+##################
+### Second app ###
+##################
+echo "Deploying second app..."
+
+helm upgrade ${second[name]} \
+  --install \
+  --wait \
+  --debug \
+  --create-namespace \
+  --namespace ${second[namespace]} \
+  --set dockerhubName=$DOCKERHUB_NAME \
+  --set name=${second[name]} \
+  --set namespace=${second[namespace]} \
+  --set port=${second[port]} \
+  --set newRelicLicensekey=$NEWRELIC_LICENSE_KEY \
+  "../charts/${second[name]}"
+#########
 
 # #################
 # ### Third App ###
