@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dto"
+	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
 )
 
 func CreateSuccessfulHttpResponse(

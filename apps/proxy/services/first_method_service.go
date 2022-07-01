@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/commons"
-	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dto"
+	dto "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/dtos"
 )
 
 func FirstMethod(
