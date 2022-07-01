@@ -51,7 +51,5 @@ func Log(
 		default:
 			logger.Logger.Info().Msg(message)
 		}
-
-		logger.Logger.Info().Msg(message)
 	}
 }
