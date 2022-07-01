@@ -11,12 +11,12 @@ import (
 )
 
 func FirstMethod(
-	c *gin.Context,
+	ginctx *gin.Context,
 ) {
 
 	log.Info("First method is triggered...")
 
-	requestBody, err := parseRequestBody(c)
+	requestBody, err := parseRequestBody(ginctx)
 
 	if err != nil {
 		return
@@ -24,22 +24,22 @@ func FirstMethod(
 
 	log.Info("First method is executed.")
 
-	commons.CreateSuccessfulHttpResponse(c, http.StatusOK,
+	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		createResponseDto(requestBody))
 }
 
 func parseRequestBody(
-	c *gin.Context,
+	ginctx *gin.Context,
 ) (
 	*dto.RequestDto,
 	error,
 ) {
 	var requestDto dto.RequestDto
 
-	err := c.BindJSON(&requestDto)
+	err := ginctx.BindJSON(&requestDto)
 
 	if err != nil {
-		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
 			"Request body could not be parsed.")
 
 		return nil, err

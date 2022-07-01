@@ -15,18 +15,18 @@ import (
 )
 
 func FirstMethod(
-	c *gin.Context,
+	ginctx *gin.Context,
 ) {
 
 	log.Info("First method is triggered...")
 
-	requestBody, err := parseRequestBody(c)
+	requestBody, err := parseRequestBody(ginctx)
 
 	if err != nil {
 		return
 	}
 
-	responseDtoFromFirstService, err := makeRequestToFirstService(c,
+	responseDtoFromFirstService, err := makeRequestToFirstService(ginctx,
 		requestBody)
 
 	if err != nil {
@@ -35,22 +35,22 @@ func FirstMethod(
 
 	log.Info("First method is executed.")
 
-	commons.CreateSuccessfulHttpResponse(c, http.StatusOK,
+	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		createResponseDto(responseDtoFromFirstService))
 }
 
 func parseRequestBody(
-	c *gin.Context,
+	ginctx *gin.Context,
 ) (
 	*dto.RequestDto,
 	error,
 ) {
 	var requestDto dto.RequestDto
 
-	err := c.BindJSON(&requestDto)
+	err := ginctx.BindJSON(&requestDto)
 
 	if err != nil {
-		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
 			"Request body could not be parsed.")
 
 		return nil, err
@@ -63,7 +63,7 @@ func parseRequestBody(
 }
 
 func makeRequestToFirstService(
-	c *gin.Context,
+	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
 ) (
 	*dto.ResponseDto,
@@ -78,14 +78,14 @@ func makeRequestToFirstService(
 		bytes.NewBuffer(requestDtoInBytes))
 
 	if err != nil {
-		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
 			"Call to FirstService has failed.")
 
 		return nil, err
 	}
 
 	if httpResponse.StatusCode != http.StatusOK {
-		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
 			"Call to FirstService has failed.")
 
 		return nil, errors.New("call to first service has failed")
@@ -96,7 +96,7 @@ func makeRequestToFirstService(
 	responseDtoInBytes, err := ioutil.ReadAll(httpResponse.Body)
 
 	if err != nil {
-		commons.CreateFailedHttpResponse(c, http.StatusBadRequest,
+		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
 			"Response from first service could not be parsed.")
 
 		return nil, err

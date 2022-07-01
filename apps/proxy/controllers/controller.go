@@ -7,10 +7,6 @@ import (
 	services "github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/services"
 )
 
-type User struct {
-	FirstName string
-}
-
 func CreateHandlers(
 	router *gin.Engine,
 ) {

@@ -7,31 +7,20 @@ import (
 	services "github.com/nr-turkarslan/newrelic-tracing-golang/apps/first/services"
 )
 
-type User struct {
-	FirstName string
-}
-
 func CreateHandlers(
-	r *gin.Engine,
+	router *gin.Engine,
 ) {
-	createHealthHandler(r)
-	createFirstMethodHandler(r)
-}
 
-// Health check
-func createHealthHandler(
-	r *gin.Engine,
-) {
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "OK!",
+	proxy := router.Group("/first")
+	{
+		// Health check
+		proxy.GET("/health", func(ginctx *gin.Context) {
+			ginctx.JSON(http.StatusOK, gin.H{
+				"message": "OK!",
+			})
 		})
-	})
-}
 
-// First method
-func createFirstMethodHandler(
-	r *gin.Engine,
-) {
-	r.POST("/method1", services.FirstMethod)
+		// First method
+		proxy.POST("/method1", services.FirstMethod)
+	}
 }
