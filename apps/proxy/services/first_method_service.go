@@ -20,7 +20,7 @@ func (s FirstMethodService) FirstMethod(
 	ginctx *gin.Context,
 ) {
 
-	commons.Log(zerolog.InfoLevel, "First method is triggered...")
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "First method is triggered...")
 
 	requestBody, err := s.parseRequestBody(ginctx)
 
@@ -35,7 +35,7 @@ func (s FirstMethodService) FirstMethod(
 		return
 	}
 
-	commons.Log(zerolog.InfoLevel, "First method is executed.")
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "First method is executed.")
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		s.createResponseDto(responseDtoFromFirstService))
@@ -58,8 +58,8 @@ func (FirstMethodService) parseRequestBody(
 		return nil, err
 	}
 
-	commons.Log(zerolog.InfoLevel, "Value provided: "+requestDto.Value)
-	commons.Log(zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Value provided: "+requestDto.Value)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
 
 	return &requestDto, nil
 }
@@ -107,8 +107,8 @@ func (FirstMethodService) makeRequestToFirstService(
 	var responseDto dto.ResponseDto
 	json.Unmarshal(responseDtoInBytes, &responseDto)
 
-	commons.Log(zerolog.InfoLevel, "Value retrieved: "+requestDto.Value)
-	commons.Log(zerolog.InfoLevel, "Tag retrieved: "+requestDto.Tag)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Value retrieved: "+requestDto.Value)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Tag retrieved: "+requestDto.Tag)
 
 	return &responseDto, nil
 }

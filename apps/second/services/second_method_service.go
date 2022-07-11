@@ -15,7 +15,7 @@ func SecondMethod(
 	ginctx *gin.Context,
 ) {
 
-	commons.Log(zerolog.InfoLevel, "Second method is triggered...")
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Second method is triggered...")
 
 	for key, element := range ginctx.Request.Header {
 		fmt.Println("Key:", key, "=>", "Element:", element)
@@ -28,7 +28,7 @@ func SecondMethod(
 		return
 	}
 
-	commons.Log(zerolog.InfoLevel, "Second method is executed.")
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Second method is executed.")
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		createResponseDto(requestBody))
@@ -51,8 +51,8 @@ func parseRequestBody(
 		return nil, err
 	}
 
-	commons.Log(zerolog.InfoLevel, "Value provided: "+requestDto.Value)
-	commons.Log(zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Value provided: "+requestDto.Value)
+	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Tag provided: "+requestDto.Tag)
 
 	return &requestDto, nil
 }
