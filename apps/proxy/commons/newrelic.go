@@ -11,15 +11,22 @@ func CreateNewRelicAgent() *newrelic.Application {
 
 	log.Info().Msg("Starting New Relic agent...")
 
-	os.Setenv("NEW_RELIC_ENABLED", "true")
-	os.Setenv("NEW_RELIC_LICENSE_KEY", os.Getenv("NEWRELIC_LICENSE_KEY"))
-	os.Setenv("NEW_RELIC_APP_NAME", "proxy-go")
-	os.Setenv("NEW_RELIC_DISTRIBUTED_TRACING_ENABLED", "true")
-	os.Setenv("NEW_RELIC_LOG", "stdout")
-	// os.Setenv("NEW_RELIC_LOG_LEVEL", "debug")
+	// os.Setenv("NEW_RELIC_ENABLED", "true")
+	// os.Setenv("NEW_RELIC_LICENSE_KEY", os.Getenv("NEWRELIC_LICENSE_KEY"))
+	// os.Setenv("NEW_RELIC_APP_NAME", "proxy-go")
+	// os.Setenv("NEW_RELIC_DISTRIBUTED_TRACING_ENABLED", "true")
+	// os.Setenv("NEW_RELIC_LOG", "stdout")
+	// // os.Setenv("NEW_RELIC_LOG_LEVEL", "debug")
 
 	nrapp, err := newrelic.NewApplication(
-		newrelic.ConfigFromEnvironment(),
+		// newrelic.ConfigFromEnvironment(),
+		newrelic.ConfigEnabled(true),
+		newrelic.ConfigAppName("proxy-go"),
+		newrelic.ConfigLicense(os.Getenv("NEWRELIC_LICENSE_KEY")),
+		newrelic.ConfigDistributedTracerEnabled(true),
+		newrelic.ConfigAppLogEnabled(true),
+		newrelic.ConfigAppLogForwardingEnabled(true),
+		newrelic.ConfigAppLogForwardingMaxSamplesStored(500),
 	)
 
 	if err != nil {

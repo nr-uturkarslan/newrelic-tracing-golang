@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -77,21 +76,10 @@ func (s SecondMethodService) makeRequestToSecondService(
 
 	secondUrl := "http://second.second.svc.cluster.local:8080/second/method2"
 
-	requestDtoInBytes, _ := json.Marshal(requestDto)
+	customAttributes := map[string]string{"mycustomattributekey": "mycustomattributevalue"}
 
-	client := &http.Client{}
-	client.Transport = newrelic.NewRoundTripper(client.Transport)
-
-	request, _ := http.NewRequest(http.MethodPost, secondUrl,
-		bytes.NewBufferString(string(requestDtoInBytes)),
-	)
-	request.Header.Add("Content-Type", "application/json")
-
-	txn := newrelic.FromContext(ginctx)
-	txn.AddAttribute("customattributekey", "customattributevalue")
-
-	request = newrelic.RequestWithTransactionContext(request, txn)
-	httpResponse, err := client.Do(request)
+	httpResponse, err := commons.PerformPostRequest(secondUrl, ginctx,
+		requestDto, customAttributes)
 
 	if err != nil {
 		commons.CreateFailedHttpResponse(ginctx, http.StatusBadRequest,
