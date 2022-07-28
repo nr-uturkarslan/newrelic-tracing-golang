@@ -13,7 +13,7 @@ func CreateNewRelicAgent() *newrelic.Application {
 
 	nrapp, err := newrelic.NewApplication(
 		newrelic.ConfigEnabled(true),
-		newrelic.ConfigAppName("proxy-go"),
+		newrelic.ConfigAppName("third-go"),
 		newrelic.ConfigLicense(os.Getenv("NEWRELIC_LICENSE_KEY")),
 		newrelic.ConfigDistributedTracerEnabled(true),
 		newrelic.ConfigAppLogEnabled(true),

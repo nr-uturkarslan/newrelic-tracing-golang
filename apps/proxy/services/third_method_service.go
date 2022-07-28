@@ -18,22 +18,27 @@ type ThirdMethodService struct {
 	KafkaConn *kafka.Conn
 }
 
-func (s ThirdMethodService) ThirdMethod(
+func (s *ThirdMethodService) ThirdMethod(
 	ginctx *gin.Context,
 ) {
+
+	// Start transaction
+	txn := s.Nrapp.StartTransaction("test")
 
 	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Third method is triggered...")
 
 	requestBody, err := s.parseRequestBody(ginctx)
 
 	if err != nil {
+		txn.End()
 		return
 	}
 
 	responseDtoFromThirdService, err := s.publishToKafka(ginctx,
-		requestBody)
+		requestBody, txn)
 
 	if err != nil {
+		txn.End()
 		return
 	}
 
@@ -41,6 +46,8 @@ func (s ThirdMethodService) ThirdMethod(
 
 	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
 		s.createResponseDto(responseDtoFromThirdService))
+
+	txn.End()
 }
 
 func (*ThirdMethodService) parseRequestBody(
@@ -69,6 +76,7 @@ func (*ThirdMethodService) parseRequestBody(
 func (s *ThirdMethodService) publishToKafka(
 	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
+	txn *newrelic.Transaction,
 ) (
 	*dto.ResponseDto,
 	error,
@@ -77,8 +85,24 @@ func (s *ThirdMethodService) publishToKafka(
 	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Publishing Kafka message...")
 	requestDtoInBytes, _ := json.Marshal(requestDto)
 
+	// Get distributed tracing headers
+	dtHeaders := http.Header{}
+	txn.InsertDistributedTraceHeaders(dtHeaders)
+
+	// Put W3C headers into Kafka message
+	headers := []kafka.Header{}
+	headers = append(headers, kafka.Header{
+		Key:   "traceparent",
+		Value: []byte(dtHeaders.Get("traceparent")),
+	})
+	headers = append(headers, kafka.Header{
+		Key:   "tracestate",
+		Value: []byte(dtHeaders.Get("tracestate")),
+	})
+
 	_, err := s.KafkaConn.WriteMessages(kafka.Message{
-		Value: requestDtoInBytes,
+		Headers: headers,
+		Value:   requestDtoInBytes,
 	})
 
 	if err != nil {
