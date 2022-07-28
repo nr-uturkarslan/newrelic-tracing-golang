@@ -1,14 +1,18 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	services "github.com/nr-turkarslan/newrelic-tracing-golang/apps/third/services"
+	"github.com/newrelic/go-agent/v3/newrelic"
+
+	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/third/services"
 )
 
 func CreateHandlers(
 	router *gin.Engine,
+	nrapp *newrelic.Application,
 ) {
 
 	proxy := router.Group("/third")
@@ -19,8 +23,7 @@ func CreateHandlers(
 				"message": "OK!",
 			})
 		})
-
-		// Third method
-		proxy.POST("/third", services.ThirdMethod)
 	}
+
+	go services.ThirdMethod(context.Background())
 }

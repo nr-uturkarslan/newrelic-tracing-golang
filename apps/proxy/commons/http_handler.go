@@ -29,7 +29,9 @@ func PerformPostRequest(
 	request, _ := http.NewRequest(http.MethodPost, url,
 		bytes.NewBufferString(string(requestDtoInBytes)),
 	)
+
 	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("mycustomheaderkey", "mycustomheadervalue")
 
 	txn := newrelic.FromContext(ginctx)
 	for key, value := range customAttributes {

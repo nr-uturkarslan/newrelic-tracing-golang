@@ -1,9 +1,12 @@
 package services
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
+	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/third/commons"
@@ -11,21 +14,31 @@ import (
 )
 
 func ThirdMethod(
-	ginctx *gin.Context,
+	ctx context.Context,
 ) {
 
 	log.Info("Third method is triggered...")
 
-	requestBody, err := parseRequestBody(ginctx)
+	commons.LogWithContext(zerolog.InfoLevel, "Starting Kafka...")
 
-	if err != nil {
-		return
+	r := kafka.NewReader(kafka.ReaderConfig{
+		Brokers: []string{"kafka.kafka.svc.cluster.local:9092"},
+		Topic:   "tracing",
+		GroupID: "tracingconsumer",
+	})
+
+	commons.LogWithContext(zerolog.InfoLevel, "Kafka is started.")
+
+	for {
+		// the `ReadMessage` method blocks until we receive the next event
+		msg, err := r.ReadMessage(ctx)
+		if err != nil {
+			commons.Log(zerolog.ErrorLevel, "Kafka message could not be received.")
+			return
+		}
+
+		commons.Log(zerolog.InfoLevel, "Kafka message is received: "+string(msg.Value))
 	}
-
-	log.Info("Third method is executed.")
-
-	commons.CreateSuccessfulHttpResponse(ginctx, http.StatusOK,
-		createResponseDto(requestBody))
 }
 
 func parseRequestBody(

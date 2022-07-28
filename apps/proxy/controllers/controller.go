@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/rs/zerolog"
+	"github.com/segmentio/kafka-go"
 
+	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/commons"
 	"github.com/nr-turkarslan/newrelic-tracing-golang/apps/proxy/services"
 )
 
@@ -20,6 +24,10 @@ func CreateHandlers(
 	firstMethodService := services.FirstMethodService{}
 	secondMethodService := services.SecondMethodService{
 		Nrapp: nrapp,
+	}
+	thirdMethodService := services.ThirdMethodService{
+		Nrapp:     nrapp,
+		KafkaConn: createKafkaConnection(),
 	}
 
 	proxy := router.Group("/proxy")
@@ -36,5 +44,23 @@ func CreateHandlers(
 
 		// Second method
 		proxy.POST("/method2", secondMethodService.SecondMethod)
+
+		// Third method
+		proxy.POST("/method3", thirdMethodService.ThirdMethod)
 	}
+}
+
+func createKafkaConnection() *kafka.Conn {
+
+	commons.Log(zerolog.InfoLevel, "Starting Kafka...")
+
+	conn, err := kafka.DialLeader(context.Background(),
+		"tcp", "kafka.kafka.svc.cluster.local:9092", "tracing", 0)
+	if err != nil {
+		commons.Log(zerolog.PanicLevel, err.Error())
+		panic("could not dial: " + err.Error())
+	}
+
+	commons.Log(zerolog.InfoLevel, "Kafka is started.")
+	return conn
 }
