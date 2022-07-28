@@ -23,7 +23,7 @@ func (s *ThirdMethodService) ThirdMethod(
 ) {
 
 	// Start transaction
-	txn := s.Nrapp.StartTransaction("test")
+	txn := newrelic.FromContext(ginctx)
 
 	commons.LogWithContext(ginctx, zerolog.InfoLevel, "Third method is triggered...")
 

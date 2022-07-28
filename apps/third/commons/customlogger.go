@@ -57,11 +57,11 @@ func Log(
 }
 
 func LogWithContext(
+	txn *newrelic.Transaction,
 	logLevel zerolog.Level,
 	message string,
 ) {
 
-	txn := newrelic.FromContext(context.Background())
 	ctx := newrelic.NewContext(context.Background(), txn)
 
 	nrLogger := logger.Logger.Hook(nrzerolog.NewRelicHook{

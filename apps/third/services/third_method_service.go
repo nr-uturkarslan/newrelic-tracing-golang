@@ -38,8 +38,8 @@ func ThirdMethod() {
 			headerKey := header.Key
 			headerValue := string(header.Value)
 
-			commons.LogWithContext(zerolog.InfoLevel, "Header key: "+headerKey)
-			commons.LogWithContext(zerolog.InfoLevel, "Header value: "+headerValue)
+			commons.LogWithContext(txn, zerolog.InfoLevel, "Header key: "+headerKey)
+			commons.LogWithContext(txn, zerolog.InfoLevel, "Header value: "+headerValue)
 
 			if header.Key == "traceparent" {
 				dtHeader.Add("traceparent", string(headerValue))
@@ -58,15 +58,15 @@ func ThirdMethod() {
 			continue
 		}
 
-		commons.LogWithContext(zerolog.InfoLevel, "Value: "+body.Value)
-		commons.LogWithContext(zerolog.InfoLevel, "Tag: "+body.Tag)
+		commons.LogWithContext(txn, zerolog.InfoLevel, "Value: "+body.Value)
+		commons.LogWithContext(txn, zerolog.InfoLevel, "Tag: "+body.Tag)
 
 		txn.End()
 	}
 }
 
 func createKafkaReader() *kafka.Reader {
-	commons.LogWithContext(zerolog.InfoLevel, "Starting Kafka...")
+	commons.Log(zerolog.InfoLevel, "Starting Kafka...")
 
 	kafkaReader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: []string{"kafka.kafka.svc.cluster.local:9092"},
@@ -74,7 +74,7 @@ func createKafkaReader() *kafka.Reader {
 		GroupID: "tracingconsumer",
 	})
 
-	commons.LogWithContext(zerolog.InfoLevel, "Kafka is started.")
+	commons.Log(zerolog.InfoLevel, "Kafka is started.")
 
 	return kafkaReader
 }
