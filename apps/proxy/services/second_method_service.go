@@ -18,7 +18,7 @@ type SecondMethodService struct {
 	Nrapp *newrelic.Application
 }
 
-func (s SecondMethodService) SecondMethod(
+func (s *SecondMethodService) SecondMethod(
 	ginctx *gin.Context,
 ) {
 
@@ -43,7 +43,7 @@ func (s SecondMethodService) SecondMethod(
 		s.createResponseDto(responseDtoFromSecondService))
 }
 
-func (SecondMethodService) parseRequestBody(
+func (*SecondMethodService) parseRequestBody(
 	ginctx *gin.Context,
 ) (
 	*dto.RequestDto,
@@ -66,7 +66,7 @@ func (SecondMethodService) parseRequestBody(
 	return &requestDto, nil
 }
 
-func (s SecondMethodService) makeRequestToSecondService(
+func (s *SecondMethodService) makeRequestToSecondService(
 	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
 ) (
@@ -115,7 +115,7 @@ func (s SecondMethodService) makeRequestToSecondService(
 	return &responseDto, nil
 }
 
-func (SecondMethodService) createResponseDto(
+func (*SecondMethodService) createResponseDto(
 	data *dto.ResponseDto,
 ) *dto.ResponseDto {
 	return &dto.ResponseDto{

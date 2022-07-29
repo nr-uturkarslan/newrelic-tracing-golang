@@ -16,7 +16,7 @@ import (
 
 type FirstMethodService struct{}
 
-func (s FirstMethodService) FirstMethod(
+func (s *FirstMethodService) FirstMethod(
 	ginctx *gin.Context,
 ) {
 
@@ -41,7 +41,7 @@ func (s FirstMethodService) FirstMethod(
 		s.createResponseDto(responseDtoFromFirstService))
 }
 
-func (FirstMethodService) parseRequestBody(
+func (*FirstMethodService) parseRequestBody(
 	ginctx *gin.Context,
 ) (
 	*dto.RequestDto,
@@ -64,7 +64,7 @@ func (FirstMethodService) parseRequestBody(
 	return &requestDto, nil
 }
 
-func (FirstMethodService) makeRequestToFirstService(
+func (*FirstMethodService) makeRequestToFirstService(
 	ginctx *gin.Context,
 	requestDto *dto.RequestDto,
 ) (
@@ -113,7 +113,7 @@ func (FirstMethodService) makeRequestToFirstService(
 	return &responseDto, nil
 }
 
-func (FirstMethodService) createResponseDto(
+func (*FirstMethodService) createResponseDto(
 	data *dto.ResponseDto,
 ) *dto.ResponseDto {
 	return &dto.ResponseDto{
