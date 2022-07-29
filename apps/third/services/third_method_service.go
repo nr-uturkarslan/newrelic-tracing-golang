@@ -33,23 +33,32 @@ func ThirdMethod() {
 		txn := nrapp.StartTransaction("test")
 
 		// Get distributed tracing headers
+		var tracestate string
+		var traceparent string
 		dtHeader := http.Header{}
+
 		for _, header := range msg.Headers {
+
+			// Get header key and value
 			headerKey := header.Key
 			headerValue := string(header.Value)
 
-			commons.LogWithContext(txn, zerolog.InfoLevel, "Header key: "+headerKey)
-			commons.LogWithContext(txn, zerolog.InfoLevel, "Header value: "+headerValue)
-
-			if header.Key == "traceparent" {
+			// Add header info into http header object
+			if headerKey == "traceparent" {
+				traceparent = string(headerValue)
 				dtHeader.Add("traceparent", string(headerValue))
-			} else if header.Key == "tracestate" {
+			} else if headerKey == "tracestate" {
+				tracestate = string(headerValue)
 				dtHeader.Add("tracestate", string(headerValue))
 			}
 		}
 
 		// Set distributed tracing headers
 		txn.AcceptDistributedTraceHeaders(newrelic.TransportKafka, dtHeader)
+
+		// Log distributed tracing headers
+		commons.LogWithContext(txn, zerolog.InfoLevel, "Tracestate: "+traceparent)
+		commons.LogWithContext(txn, zerolog.InfoLevel, "Traceparent: "+tracestate)
 
 		// Parse message
 		body, err := parseMessage(msg.Value)
